@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
 use App\Models\ClientRole;
 use Illuminate\Http\Request;
@@ -14,18 +16,9 @@ class ClientController extends Controller
         return response()->json(Client::with('clientRole')->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'client_role_id' => 'required|exists:client_roles,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $client = Client::create($request->all());
+        $client = Client::create($request->validated());
 
         return response()->json($client, 201);
     }
@@ -41,7 +34,7 @@ class ClientController extends Controller
         return response()->json($client);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateClientRequest $request, $id)
     {
         $client = Client::find($id);
 
@@ -49,16 +42,7 @@ class ClientController extends Controller
             return response()->json(['message' => 'Client not found'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'client_role_id' => 'required|exists:client_roles,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $client->update($request->all());
+        $client->update($request->validated());
 
         return response()->json($client);
     }

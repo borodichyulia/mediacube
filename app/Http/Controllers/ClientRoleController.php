@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClientRoleRequest;
+use App\Http\Requests\UpdateClientRoleRequest;
 use App\Models\ClientRole;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 
 class ClientRoleController extends Controller
 {
@@ -18,17 +18,9 @@ class ClientRoleController extends Controller
         return response()->json($data);
     }
 
-    public function store(Request $request)
+    public function store(StoreClientRoleRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:client_roles',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $role = ClientRole::create($request->all());
+        $role = ClientRole::create($request->validated());
 
         return response()->json($role, 201);
     }
@@ -44,7 +36,7 @@ class ClientRoleController extends Controller
         return response()->json($role);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateClientRoleRequest $request, $id)
     {
         $role = ClientRole::find($id);
 
@@ -52,15 +44,7 @@ class ClientRoleController extends Controller
             return response()->json(['message' => 'Role not found'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:client_roles,name,' . $id,
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $role->update($request->all());
+        $role->update($request->validated());
 
         return response()->json($role);
     }
