@@ -8,11 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -21,20 +16,13 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            // Для API: возвращаем токен
-            if ($request->wantsJson()) {
                 $token = $request->user()->createToken('auth-token')->plainTextToken;
                 return response()->json([
                     'message' => 'Logged in successfully',
                     'token' => $token
                 ], 200);
-            }
-
-            // Для веба: редирект
-            return redirect()->intended('/');
         }
 
-        // Ошибка аутентификации
         return back()->withErrors([
             'email' => 'Неверные учетные данные.',
         ]);
@@ -42,13 +30,6 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-//        Auth::logout();
-//
-//        $request->session()->invalidate();
-//        $request->session()->regenerateToken();
-//
-//        return response()->json(['message' => 'Logged out successfully']);
-
         if ($request->user()) {
             $request->user()->tokens()->delete();
         }

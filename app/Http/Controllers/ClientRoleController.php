@@ -58,8 +58,8 @@ class ClientRoleController extends Controller
             return response()->json(['message' => 'Role not found'], 404);
         }
 
-        if ($role->users()->count() > 0) {
-            return response()->json(['message' => 'Cannot delete role with users'], 422);
+        if ($role->clients()->count() > 0) {
+            return response()->json(['message' => 'Cannot delete role with clients'], 422);
         }
 
         $role->delete();

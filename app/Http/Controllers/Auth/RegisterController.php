@@ -10,13 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    // Показ формы регистрации
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
-    }
-
-    // Обработка регистрации (API + Web)
     public function register(Request $request)
     {
         $validatedData = $request->validate([
@@ -30,19 +23,12 @@ class RegisterController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        // Автоматический вход после регистрации
         Auth::login($user);
 
-        // Для API: возвращаем токен
-        if ($request->wantsJson()) {
-            $token = $user->createToken('auth-token')->plainTextToken;
-            return response()->json([
-                'message' => 'User registered',
-                'token' => $token,
-            ], 201);
-        }
-
-        // Для веба: редирект
-        return redirect('/');
+        $token = $user->createToken('auth-token')->plainTextToken;
+        return response()->json([
+            'message' => 'User registered',
+            'token' => $token,
+        ], 201);
     }
 }
