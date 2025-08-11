@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClientRoleRequest;
 use App\Http\Requests\UpdateClientRoleRequest;
+use App\Http\Resources\ClientRoleResource;
 use App\Models\ClientRole;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,14 +16,14 @@ class ClientRoleController extends Controller
         $data = Cache::remember($cacheKey, 20, function () {
             return ClientRole::all();
         });
-        return response()->json($data);
+        return ClientRoleResource::collection($data);
     }
 
     public function store(StoreClientRoleRequest $request)
     {
         $role = ClientRole::create($request->validated());
 
-        return response()->json($role, 201);
+        return new ClientRoleResource($role, 201);
     }
 
     public function show($id)
@@ -33,7 +34,7 @@ class ClientRoleController extends Controller
             return response()->json(['message' => 'Role not found'], 404);
         }
 
-        return response()->json($role);
+        return new ClientRoleResource($role);
     }
 
     public function update(UpdateClientRoleRequest $request, $id)
@@ -46,7 +47,7 @@ class ClientRoleController extends Controller
 
         $role->update($request->validated());
 
-        return response()->json($role);
+        return new ClientRoleResource($role);
     }
 
     public function destroy($id)
