@@ -27,7 +27,7 @@ class LoginController extends Controller
                 return response()->json([
                     'message' => 'Logged in successfully',
                     'token' => $token
-                ], 201);
+                ], 200);
             }
 
             // Для веба: редирект
